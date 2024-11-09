@@ -1,5 +1,5 @@
 # Step 1: Build the app using Node.js and Bun
-FROM node:18-alpine AS build
+FROM oven/bun:latest AS build
 
 # Set working directory
 WORKDIR /app
@@ -8,8 +8,13 @@ WORKDIR /app
 COPY package.json ./
 COPY bun.lockb ./
 
+# Install dependencies
+RUN bun install 
+
 # Copy the rest of the app files
-COPY dist .
+COPY . .
+
+RUN bun run build
 
 # Step 2: Serve the built files using Nginx
 FROM nginx:alpine AS production
