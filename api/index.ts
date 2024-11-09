@@ -1,5 +1,7 @@
 import redis from "redis";
 
+console.log("Backend", process.env.REDIS_URL);
+
 const client = redis.createClient({
   url: process.env.REDIS_URL,
 });
@@ -14,15 +16,23 @@ pub.connect();
 sub.connect();
 client.connect();
 
+client.on("connect", () => {
+  console.log("Redis connected");
+});
+
+client.on("error", (err) => {
+  console.error(err);
+});
+
 Bun.serve({
   port: process.env.PORT || 3000,
   async fetch(req) {
     const url = new URL(req.url);
-    if (url.pathname === "/") {
+    if (url.pathname === "/api/") {
       return new Response("OK");
     }
-    if (url.pathname.startsWith("/pop/") && req.method === "POST") {
-      const name = url.pathname.replace("/pop/", "");
+    if (url.pathname.startsWith("/api/pop/") && req.method === "POST") {
+      const name = url.pathname.replace("/api/pop/", "");
       if (!client.exists(name)) {
         client.set(name, 0);
       }
@@ -40,8 +50,8 @@ Bun.serve({
         }
       );
     }
-    if (url.pathname.startsWith("/pop/") && req.method === "GET") {
-      const name = url.pathname.replace("/pop/", "");
+    if (url.pathname.startsWith("/api/pop/") && req.method === "GET") {
+      const name = url.pathname.replace("/api/pop/", "");
       const value = await client.get(name);
       return Response.json(
         {
@@ -54,8 +64,8 @@ Bun.serve({
         }
       );
     }
-    if (url.pathname.startsWith("/sub/") && req.method === "GET") {
-      const name = url.pathname.replace("/sub/", "");
+    if (url.pathname.startsWith("/api/sub/") && req.method === "GET") {
+      const name = url.pathname.replace("/api/sub/", "");
       return Response.json(
         await new Promise((resolve) => {
           sub.subscribe(`topic:${name}`, (r) => {
