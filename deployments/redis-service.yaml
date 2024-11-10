@@ -5,6 +5,7 @@ metadata:
   labels:
     app: redis
 spec:
+  type: NodePort # Use LoadBalancer if on cloud provider
   selector:
     app: redis
   ports:
