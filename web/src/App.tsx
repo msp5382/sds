@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const apiUrl = "/api/pop"; // Backend API URL
+const apiUrl = "http://localhost:3000/api/pop"; // Backend API URL
 
 function App() {
   const [count, setCount] = useState(0);
@@ -10,16 +10,44 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch immediately on mount
     fetchCount(name);
+    let controller: AbortController;
 
-    // Set up polling every 1000ms (1 second)
-    const intervalId = setInterval(() => {
-      fetchCount(name);
-    }, 1000);
+    const sync = async (name: string) => {
+      try {
+        controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        const { data } = await axios.get(
+          `http://localhost:3000/api/sub/${name.toLowerCase()}`,
+          {
+            signal: controller.signal,
+          }
+        );
+        clearTimeout(timeout);
+        console.log("Data:", data);
+        setCount(data.value);
+      } catch (error) {
+        if (axios.isCancel(error)) {
+          console.log("Request cancelled");
+        }
+      }
+    };
 
-    // Cleanup the interval when the component unmounts or when `name` changes
-    return () => clearInterval(intervalId);
+    let breakLoop = false;
+
+    (async () => {
+      while (true) {
+        if (breakLoop) {
+          break;
+        }
+        await sync(name);
+      }
+    })();
+
+    return () => {
+      breakLoop = true;
+      controller.abort();
+    };
   }, [name]);
 
   // Function to update the click count using Axios
