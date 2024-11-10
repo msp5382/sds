@@ -17,10 +17,11 @@ spec:
           image: redis:latest
           ports:
             - containerPort: 6379
-          command: [
+          command:
+            [
               "redis-server",
               "--replicaof",
-              '$(kubectl get pods  -l app=redis -o json | jq -r \'.items | map(.status.podIP) | join(\":6379 \")\')',
+              "redis-service",
               "6379",
               "--slave-read-only",
               "no",
