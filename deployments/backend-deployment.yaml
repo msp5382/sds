@@ -5,7 +5,7 @@ metadata:
   labels:
     app: backend
 spec:
-  replicas: 1
+  replicas: 2 # Add more replicas for demo auto-deploy
   selector:
     matchLabels:
       app: backend
@@ -14,16 +14,6 @@ spec:
       labels:
         app: backend
     spec:
-      # affinity:
-      #   podAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       - labelSelector:
-      #           matchExpressions:
-      #             - key: app
-      #               operator: In
-      #               values:
-      #                 - redis
-      #         topologyKey: "kubernetes.io/hostname"
       containers:
         - name: backend
           image: ttl.sh/sds-api
