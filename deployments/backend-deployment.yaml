@@ -14,16 +14,16 @@ spec:
       labels:
         app: backend
     spec:
-      affinity:
-        podAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - redis
-              topologyKey: "kubernetes.io/hostname"
+      # affinity:
+      #   podAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       - labelSelector:
+      #           matchExpressions:
+      #             - key: app
+      #               operator: In
+      #               values:
+      #                 - redis
+      #         topologyKey: "kubernetes.io/hostname"
       containers:
         - name: backend
           image: ttl.sh/sds-api
