@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      role: slave
+  template:
+    metadata:
+      labels:
+        role: slave
+    spec:
+      containers:
+        - name: redis-slave
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+          command: [
+              "redis-server",
+              "--replicaof",
+              '$(kubectl get pods  -l app=redis -o json | jq -r \'.items | map(.status.podIP) | join(\":6379 \")\')',
+              "6379",
+              "--slave-read-only",
+              "no",
+            ]
