@@ -4,7 +4,7 @@ metadata:
   name: frontend-ingress
 spec:
   rules:
-    - host: localhost
+    - host: ubuntu.orb.local
       http:
         paths:
           - path: /

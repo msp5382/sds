@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const apiUrl = "http://localhost:3000/api/pop"; // Backend API URL
+const apiUrl = "/api/pop"; // Backend API URL
 
 function App() {
   const [count, setCount] = useState(0);
@@ -17,12 +17,9 @@ function App() {
       try {
         controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 5000);
-        const { data } = await axios.get(
-          `http://localhost:3000/api/sub/${name.toLowerCase()}`,
-          {
-            signal: controller.signal,
-          }
-        );
+        const { data } = await axios.get(`/api/sub/${name.toLowerCase()}`, {
+          signal: controller.signal,
+        });
         clearTimeout(timeout);
         console.log("Data:", data);
         setCount(data.value);
