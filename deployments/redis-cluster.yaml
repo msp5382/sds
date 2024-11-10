@@ -7,5 +7,5 @@ spec:
   serviceName: redis-cluster-service
   replicas: 9
   selector:
-	matchLabels:
-  	app: redis-cluster
+    matchLabels:
+      app: redis-cluster
